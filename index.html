@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SsnShort - URL Shortener</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 400px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 4px; word-break: break-all; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>SSN URL Shortener</h2>
+    <input type="text" id="longUrl" placeholder="Enter long URL (https://...)">
+    <button onclick="shortenUrl()">Shorten</button>
+    
+    <div id="result">
+        <strong>Short Link:</strong> <br>
+        <a id="shortLink" href="#" target="_blank"></a>
+    </div>
+</div>
+
+<script>
+    async function shortenUrl() {
+        const longUrl = document.getElementById('longUrl').value;
+        const resultDiv = document.getElementById('result');
+        const shortLinkA = document.getElementById('shortLink');
+
+        try {
+            const response = await fetch('http://localhost:8080/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ originalURL: longUrl }) // Match your DTO key
+            });
+
+            const data = await response.json();
+            
+            // Construct the full clickable URL
+            const fullShortUrl = `http://localhost:8080/${data.shURL}`;
+            
+            shortLinkA.href = fullShortUrl;
+            shortLinkA.innerText = fullShortUrl;
+            resultDiv.style.display = 'block';
+        } catch (error) {
+            alert("Error: " + error);
+        }
+    }
+</script>
+
+</body>
+</html>
